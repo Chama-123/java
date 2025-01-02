@@ -1,0 +1,52 @@
+<html>
+<head>
+<title>Home</title>
+</head>
+<body bgcolor="pink">
+<marquee>welcome to aits-rajampet</marquee>
+<center>
+<h2>employee details</h2>
+<table>border="1"cellspacing="0"cellpadding="8">
+<thead>
+<tr>
+<th>name</th>
+<th>department</th>
+<th>position</th>
+<th>salary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>krishna</td>
+<td>it</td>
+<td>s/w developer</td>
+<td>$70,0000</td>
+</tr>
+<tr>
+<td>mikly</td>
+<td>hd</td>
+<td>hr managere</td>
+<td>$60,0000</td>
+</tr>
+<tr>
+<td>krishna</td>
+<td>it</td>
+<td>s/w developer</td>
+<td>$70,0000</td>
+</tr>
+</tbody>
+</table>
+</center>
+</body>
+</html>
+
+
+
+ARG NGINX_VERSION=latest
+From nginx:&{NGINX_VERSION}
+add index.html /user/share/nginx/html/index.html
+workdir ["nginx",-g",daemon off;]
+expose 80
+lable descreiption="krishna"
+env APP_VERSION=1.0
+
