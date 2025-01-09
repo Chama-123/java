@@ -43,10 +43,10 @@
 
 
 ARG NGINX_VERSION=latest
-From nginx:&{NGINX_VERSION}
+From nginx:${NGINX_VERSION}
 add index.html /user/share/nginx/html/index.html
-workdir ["nginx",-g",daemon off;]
+workdir ["nginx","-g","daemon off;"]
 expose 80
-lable descreiption="krishna"
+label descreiption="krishna"
 env APP_VERSION=1.0
 
