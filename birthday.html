@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday, Sanju ❤️
+You are the most important person in my life, 
+and every day feels brighter because of you. 
+May your life always be filled with happiness,
+good health, and success.
+Stay the amazing person you are.</title>
+<style>
+  body {
+    margin: 0;
+    background: #020202;
+    cursor: crosshair;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+  }
+  h1 {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 2.2em;
+    font-weight: 900;
+    text-align: center;
+    user-select: none;
+  }
+</style>
+</head>
+
+<body>
+<h1>🎉 Happy Birthday <br> Happy Birthday, Sanju ❤️ You are the most important person in my life, 
+and every day feels brighter because of you. 
+May your life always be filled with happiness,
+good health, and success.
+Stay the amazing person you are. 🎉</h1>
+<canvas id="birthday"></canvas>
+
+<script>
+const PI2 = Math.PI * 2;
+const random = (min, max) => Math.random() * (max - min + 1) + min | 0;
+const timestamp = () => new Date().getTime();
+
+class Birthday {
+  constructor() {
+    this.resize();
+    this.fireworks = [];
+    this.counter = 0;
+  }
+
+  resize() {
+    this.width = canvas.width = window.innerWidth;
+    this.height = canvas.height = window.innerHeight;
+
+    let center = this.width / 2 | 0;
+    this.spawnA = center - center / 4 | 0;
+    this.spawnB = center + center / 4 | 0;
+
+    this.spawnC = this.height * .1;
+    this.spawnD = this.height * .5;
+  }
+
+  onClick(evt) {
+    let x = evt.clientX || evt.touches?.[0].pageX;
+    let y = evt.clientY || evt.touches?.[0].pageY;
+
+    let count = random(3, 5);
+    for (let i = 0; i < count; i++) {
+      this.fireworks.push(new Firework(
+        random(this.spawnA, this.spawnB),
+        this.height,
+        x, y,
+        random(0, 360),
+        random(30, 110)
+      ));
+    }
+    this.counter = -1;
+  }
+
+  update(delta) {
+    ctx.globalCompositeOperation = 'hard-light';
+    ctx.fillStyle = `rgba(20,20,20,${7 * delta})`;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    ctx.globalCompositeOperation = 'lighter';
+    for (let f of this.fireworks) f.update(delta);
+
+    this.counter += delta * 3;
+    if (this.counter >= 1) {
+      this.fireworks.push(new Firework(
+        random(this.spawnA, this.spawnB),
+        this.height,
+        random(0, this.width),
+        random(this.spawnC, this.spawnD),
+        random(0, 360),
+        random(30, 110)
+      ));
+      this.counter = 0;
+    }
+
+    this.fireworks = this.fireworks.filter(f => !f.dead);
+  }
+}
+
+class Firework {
+  constructor(x, y, tx, ty, shade, offsprings) {
+    this.dead = false;
+    this.offsprings = offsprings;
+    this.x = x; this.y = y;
+    this.tx = tx; this.ty = ty;
+    this.shade = shade;
+    this.history = [];
+  }
+
+  update(delta) {
+    if (this.dead) return;
+
+    let dx = this.tx - this.x;
+    let dy = this.ty - this.y;
+
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      this.x += dx * 2 * delta;
+      this.y += dy * 2 * delta;
+      this.history.push({x: this.x, y: this.y});
+      if (this.history.length > 20) this.history.shift();
+    } else {
+      if (this.offsprings && !this.spawned) {
+        let babies = this.offsprings / 2;
+        for (let i = 0; i < babies; i++) {
+          let angle = PI2 * i / babies;
+          birthday.fireworks.push(new Firework(
+            this.x, this.y,
+            this.x + this.offsprings * Math.cos(angle),
+            this.y + this.offsprings * Math.sin(angle),
+            this.shade, 0
+          ));
+        }
+      }
+      this.spawned = true;
+      this.history.shift();
+    }
+
+    if (!this.history.length) this.dead = true;
+
+    this.history.forEach((p, i) => {
+      ctx.beginPath();
+      ctx.fillStyle = `hsl(${this.shade},100%,${i}%)`;
+      ctx.arc(p.x, p.y, 1, 0, PI2);
+      ctx.fill();
+    });
+  }
+}
+
+const canvas = document.getElementById("birthday");
+const ctx = canvas.getContext("2d");
+const birthday = new Birthday();
+
+window.onresize = () => birthday.resize();
+document.onclick = e => birthday.onClick(e);
+document.ontouchstart = e => birthday.onClick(e);
+
+let then = timestamp();
+(function loop(){
+  requestAnimationFrame(loop);
+  let now = timestamp();
+  birthday.update((now - then) / 1000);
+  then = now;
+})();
+</script>
+</body>
+</html>
+
